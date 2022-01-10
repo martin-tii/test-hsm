@@ -9,7 +9,7 @@ arr = input("Enter text to encrypt: ")
 data = bytes(arr, 'utf-8')
 
 with token.open(user_pin='12345') as session:
-    a = session.create_object(sr.get_public_key('cert.der'))
-    enc = a.encrypt(data)
+    public = session.create_object(sr.get_public_key('cert.der'))
+    enc = public.encrypt(data)
 
 print(enc)

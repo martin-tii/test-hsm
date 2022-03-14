@@ -1,36 +1,69 @@
 # Test python pksc11.py
 
-create the certificate:
 
-`python3 creation.py`
+Initialize the softhsm token and generate keys:
 
-will generate two files called:
-1. the private key ('private.key') 
-2. the certificate in pem format ('test.crt')
+`./create-keys.sh`
 
-Then, as the python-pks11 tool needs certificates in _der_ format, we can run:
+```commandline
+root@br_hardened:~/test# ./generate-keys.sh 
+The token has been initialized and is reassigned to slot 1158325
+Using slot 0 with a present token (0x11acb5)
+Logging in to "MyTestToken1".
+Please enter User PIN: 
+Key pair generated:
+Private Key Object; RSA 
+  label:      MyRSATestKey01
+  ID:         01
+  Usage:      decrypt, sign, unwrap
+  Access:     sensitive, always sensitive, never extractable, local
+Public Key Object; RSA 1024 bits
+  label:      MyRSATestKey01
+  ID:         01
+  Usage:      encrypt, verify, wrap
+  Access:     local
+engine "pkcs11" set.
+Enter PKCS#11 token PIN for MyTestToken1:
+CKR_SLOT_ID_INVALID: Slot 0 does not exist.
+Using slot 0 with a present token (0x11acb5)
+Key pair generated:
+Private Key Object; RSA 
+  label:      myKey
+  ID:         01
+  Usage:      decrypt, sign, unwrap
+  Access:     sensitive, always sensitive, never extractable, local
+Public Key Object; RSA 1024 bits
+  label:      myKey
+  ID:         01
+  Usage:      encrypt, verify, wrap
+  Access:     local
+Using slot 0 with a present token (0x11acb5)
+writing RSA key
+Using slot 0 with a present token (0x11acb5)
+Using decrypt algorithm RSA-PKCS
+```
 
-`./convert test.crt`
+Add the path to the environment:
 
-the execution will provide two new files
-1. the public key generated ('public_key.pem')
-2. the certificate in _der_ format ('cert.der')
-
-Now, with all the previous steps, we will run the python-pkcs11 tool.
-We need to create a token:
-
-`softhsm2-util --init-token --slot 0 --label "My token 1" #password for os and user 12345`
-
-then we need to add the path to the environment
-
-`export PKCS11_MODULE='/usr/lib/aarch64-linux-gnu/libp11-kit.so.0.3.0'`
+`export PYKCS11LIB=/usr/lib/softhsm/libsofthsm2.so`
 
 Finally, we run our script:
 
 `python3 test-pkcs11.py`
+
 ```commandline
-root@br_hardened:/# python3 test-pksc11.py 
-Enter text to encrypt: hello
-b'\x89\x0bW\xd2\xe8X\xa31+y\xfd&X8\x94\xac\xfdT\xaa\x86\x08\x82\x11>\xfck\xff\xa0\x19XvW\xfd\xc2\xfc\x8f&|\x0c\xe8\xc7!a\x89\xdb\xecT\xad\xc8-V\xe3\x9f>\xf2G\xd6\xa0\x9eG\xe7Wg\xbcBj\xb9\x94\xf7\xfcL\xa1\xc5h*):\xb8\xa7\xd1\xb7\x06\x90\xed\x7fn\x92\xe7\x89\xe2WZs\xcaI\x11c?T\xe37L\x00\x8d_\xa6d:F\xcdB\xd0{\x8fE\x80\xe3C\xf8\xde\xb9\xeb\xc0\xa9\x944\x97S\xd9j\xf99W\xec,\xfbu^\xa3_\xfe}igt\xc3\x96/@\x9e\x96\x08\xf6n\x8b\x91\xf1\xf4\x84\xb0hK\xa0w\x9dGE*\x03Q\x93"\xb0\xc2\x82SmJ\x18c\x7f\xaa\xea\xe2<?B\x8f\x18M\xc1\x98v\xf9\x92\x13\xc6-z\xf5\x8e\xc2\xd2\x9e\xce\x94ba@0\xbbe\xd5\x8bc!pKl\x00\xdeDAf\x83\xfaX\x1f\xcf\xf3{\xf8h\xbcL\x89\x9d)\xb1\xe5>\xd9\xca\x8c\xa5\n\xd9%\xc7\xaf\xc9r;b\xedQ\xe6\x1c\x8eH\x83\xd6&\xac\x19toi=\xa2y\xb4\x84\xbcW>\x08\xf7O{]w\xda\xa2\xd0\x9f\xc5\xdb\xb3\xa6X\x07\xa7\xce~H\x81\xa6h@\xd3r\x07\xceA\x08\x06\xaf\xc0a\x7f\x8b\x15\xd7\x8b@}\xcf\xd6\x17p\xfa\x02\xa0\xad\x02~<\x81\xcc\xca\xb48\xd5H\x01K\x88\x0b\x1dCV\xce#\x8a\xfa8\x9d6nI\x02R\xa3\x02\xb7\x9a\xc3"%\xe6\x8a\xc3i\xd4\x99P\x9c\xf9L\xd3\xbbI|\xff/\x928P\x9f\x9e\xef\xf4\x98\xedO\x9b\x88+\x95\xcb\x97\x1feD\xa1\x90U\xea\xe5fs\xe5\xee\xec(\x8fd\xb7\x94}\x1b2*\x1c*T\xed\xbc\xeaFf\xde\xf2\x82\x14\xb2\x1e\x96\x8f\x11\x10\xb8\xca\xe7\x19\xf1Qy2\x8ft\x94\xd48\x1an\x7f\xb2\xaf\xd3\x19\xc8\x1b\x7f8j\xff\x03\xd9\xfb\xf7\xaf|\xc9\xac\xac`\x04\x18\x8f\xf8)\x00\x99\xa0\x90\xbe1\x13.^|\x0b\x0e\xb9\xf1\xb7]\x17\x918\xf5}Z\xc3\x84<\xd58\xb0\xf6vp\xc1\xc1\xed\xea\xc7\xd1fF'
+
+root@br_hardened:~# python3 test-pkcs11.py 
+Enter text to cipher:
+Hello
+
+message in hex: 48656c6c6f
+
+encrypted: b'4bb67bbf084b999870195fe0f6e4e36ab0c54e31f36ceb9c8ff590a32493eaa8e8e4b27c81d25574de2097774f632c7fbc4a52a0e43e47b88460d9bd7941691fdf80c451f7cae85e0d2ab77533202a9df1fe14f3087e72040d7fc84912891ffd17ebc0c5282f60fec895330e868bdb518588992ef07ab6e49a4671691f77ce7f'
+
+decrypted: bytearray(b'Hello')
+
+
 
 ```
+

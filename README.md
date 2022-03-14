@@ -6,7 +6,7 @@ Initialize the softhsm token and generate keys:
 `./create-keys.sh`
 
 ```commandline
-root@br_hardened:~/test# ./generate-keys.sh 
+root@br_hardened:~/test# ./create-keys.sh 
 The token has been initialized and is reassigned to slot 1158325
 Using slot 0 with a present token (0x11acb5)
 Logging in to "MyTestToken1".

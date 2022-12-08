@@ -1,0 +1,29 @@
+LIB='/usr/lib/softhsm/libsofthsm2.so'
+
+softhsm2-util --init-token --slot 0 --label MyTestToken1 --pin 1234 --so-pin 1234
+pkcs11-tool --module $LIB -l --keypairgen --key-type rsa:1024 --id 01 --label "MyRSATestKey01"
+openssl req -new -x509 -days 365 -subj '/CN=my key/' -sha256  -engine pkcs11 -keyform engine -key 01  -out cert.pem
+
+
+
+add the following to /etc/ssl/openssl.conf
+
+
+#beg of file
+
+openssl_conf = openssl_init
+#end of file
+[openssl_init]
+engines = engine_section
+
+[engine_section]
+pkcs11 = pkcs11_section
+
+[pkcs11_section]
+engine_id = pkcs11
+dynamic_path = /usr/lib/engines-1.1/pkcs11.so 
+MODULE_PATH = /usr/lib/softhsm/libsofthsm2.so
+
+
+#source 
+https://www.saela.eu/openssl/

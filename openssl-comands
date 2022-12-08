@@ -1,0 +1,18 @@
+
+rm mesh_cert.der
+
+
+#sing
+METHOD="RSA-PKCS"
+pkcs11-tool --id 01 -s -p 1234 -m $METHOD --module $LIB --input-file data --output-file data.sig
+
+#get certificate
+openssl req -engine pkcs11 -new -key id_4578616D706C65 -keyform engine -out certificate.pem -text -x509  -subj "/C=DE/ST=NRW/L=Aachen/O=Utimaco IS GmbH/OU=SystemEngineering\ HSM/CN=Max Mustermann"
+
+#sign with openssl
+openssl rsautl -engine pkcs11 -keyform engine -inkey 01 -sign -in mesh_cert.der -out signature.dat
+
+
+
+#export to pub
+openssl rsa -inform DER -outform PEM -in mesh_key.der -pubin > /etc/ssl/certs/mesh_cert.pub
